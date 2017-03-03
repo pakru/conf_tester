@@ -1,8 +1,10 @@
 {
   "TestName": "Conf service test",
   "AutoTest" : "True",
+  "Isolate" : "False",
+  "TestType" : "Services",
   "TestScript" : "conf_ecss10.py",
-  "DomainName" : "conf.domain.test4",
+  "DomainName" : "conf.domain.test3",
   "sipListenPort" : "5076",
   "SIPuaListenAddr" : "192.168.118.12",
   "SIPuaListenPort" : "5090",
@@ -12,6 +14,16 @@
       "Password" : "password",
       "Host" : "192.168.118.47",
       "Port" : "8023"
+    }
+  ],
+    "SystemVars" : [
+    {
+      "%%MODULE_PATH%%" : "/home/tester/my_python_mods",
+      "%%DEV_USER%%" : "admin",
+      "%%DEV_PASS%%" : "password",
+      "%%SERV_IP%%" : "192.168.118.47",
+      "%%CCN_PORT%%" : "8023",
+      "%%LOG_PATH%%": "/tmp/test_log/log"
     }
   ],
   "Users": [

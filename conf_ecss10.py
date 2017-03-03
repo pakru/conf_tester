@@ -1,17 +1,13 @@
-import config
-import time
-import sys
+import config, time, sys, colorama, json, logging
 #import os
 #import subprocess
 import hc_module.ecss_config_http_commands as HT
-import colorama
 from colorama import Fore, Back, Style
-import xml.etree.ElementTree as ET
+#import xml.etree.ElementTree as ET
 #import requests
 #import signal
 #from http.server import BaseHTTPRequestHandler, HTTPServer
 #from threading import Thread
-import json
 
 testConfigFile = open('conf_test.json')
 config.testConfigJson = json.loads(testConfigFile.read())
@@ -41,7 +37,7 @@ dsNode='ds1@ecss1'
 '''
 
 #sippPath = str(os.environ.get('SIPP_PATH'))
-sippListenAddress=testingDomainSIPaddr
+sippListenAddress=config.testConfigJson['SIPuaListenAddr']
 sippListenPort='15076'
 sippMediaListenPort='16016'
 sippMediaListenPortTrunk='17016'
@@ -51,8 +47,8 @@ subscrNum = []
 
 print('Users:')
 # print('Quantity: ' + str(subscrCount))
-for sipUser in sipUsersCfgJson:
-	print('\t' + sipUser['Number'])
+#for sipUser in sipUsersCfgJson:
+	#print('\t' + sipUser['Number'])
 
 #print(config.testConfigJson['Users'][1])
 '''
@@ -69,7 +65,6 @@ for sipUser in sipUsersCfgJson:
 #SIPgroup = str(config.testConfigJson['Users'][0]['SipGroup'])
 
 confNum='*71#'
-
 
 #restHost = str(os.environ.get('TC_REST_HOST'))
 #restPort = str(os.environ.get('TC_REST_PORT'))
@@ -185,15 +180,16 @@ def preconfigure():
 		return False
 
 	if not ssActivate():
-		print('Smthing gappen worng during ss activation')
+		logging.error('Failure at subscribers ss activation')
+		print('Smthing happen worng during ss activation')
 		return False
 
-
 	#####################################
-	sippListenAddress='192.168.118.12' ############################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	#sippListenAddress='192.168.118.12' ############################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	######################################
 
 	#'''
+	logging.info('Creating pjsip subscribers')
 	for sipUser in sipUsersCfgJson:
 		print(sipUser['Login'])
 		print(sipUser['Password'])
@@ -202,39 +198,27 @@ def preconfigure():
 										  displayName='Subscriber ' + str(sipUser['UserId']), uaIP=sippListenAddress,
 										  regExpiresTimeout=300))
 	#'''
-
 	return True
 
 
 def makeConf(releaseType = 'byMaster'):
 
 	# check registration status
-
+	logging.info('Check subscribers registrations')
 	for i in range(subscrCount):
 		if subscrUA[i].uaAccountInfo.reg_status != 200:
 			print(Fore.RED + 'UA failed to register!')
 			print(str(subscrUA[i].uaAccountInfo.uri) + ' state: ' + str(subscrUA[i].uaAccountInfo.reg_status) + ' - ' + str(subscrUA[i].uaAccountInfo.reg_reason))
+			logging.error('UA failed to register: ' + str(subscrUA[i].uaAccountInfo.uri) + ' state: ' + str(
+				subscrUA[i].uaAccountInfo.reg_status) + ' - ' + str(subscrUA[i].uaAccountInfo.reg_reason))
 			return False
 
 	print('Calling to *71#')
 	subscrUA[0].makeCall(phoneURI=confNum+'@'+testingDomain)
 
-	print('waiting for answer from conf')
-	cnt = 0
-	Answered = False
-	while cnt < 50:		
-		time.sleep(0.1)
-		if subscrUA[0].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break			
-		print('.',end='')		
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[0],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
 
 	confDialog = subscrUA[0].uaCurrentCall
 
@@ -243,28 +227,13 @@ def makeConf(releaseType = 'byMaster'):
 	subscrUA[0].uaCurrentCall.hold()
 	time.sleep(2)
 
-
 	print('Calling to subscriber B')
 	subscrUA[0].makeCall(phoneURI=subscrNum[1]+'@'+testingDomain)
 
 	print('waiting for answer at B party')
-	cnt = 0
-	Answered = False
-	while cnt < 50:		
-		time.sleep(0.1)
-		if subscrUA[1].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break			
-		print('.',end='')		
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[1],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
-
-
 	time.sleep(2)
 
 	print('Transfering subscriber B to conf')
@@ -289,8 +258,6 @@ def makeConf(releaseType = 'byMaster'):
 		if subscrUA[1].uaCurrentCallInfo.state != 5:
 			print(Fore.YELLOW +'Subscriber B '+ str(i) + ' in wrong state: ' + str(subscrNum[1].uaAccountInfo.uri) + ' ' + subscrNum[1].uaCurrentCallInfo.state_text)
 
-
-
 	print('Putting on hold conf')
 	confDialog.hold()
 	time.sleep(2)
@@ -299,21 +266,9 @@ def makeConf(releaseType = 'byMaster'):
 	subscrUA[0].makeCall(phoneURI=subscrNum[2]+'@'+testingDomain)
 
 	print('waiting for answer at C party')
-	cnt = 0
-	Answered = False
-	while cnt < 50:		
-		time.sleep(0.1)
-		if subscrUA[2].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break			
-		print('.',end='')		
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[2],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
 
 	time.sleep(2)
 
@@ -341,7 +296,6 @@ def makeConf(releaseType = 'byMaster'):
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
 			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
 
-
 	print('Putting on hold conf')
 	confDialog.hold()
 	time.sleep(2)
@@ -350,22 +304,9 @@ def makeConf(releaseType = 'byMaster'):
 	subscrUA[0].makeCall(phoneURI=subscrNum[3]+'@'+testingDomain)
 
 	print('waiting for answer at D party')
-	cnt = 0
-	Answered = False
-	while cnt < 50:		
-		time.sleep(0.1)
-		if subscrUA[3].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break			
-		print('.',end='')		
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[3],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
-
 	time.sleep(2)
 
 	print('Transfering subscriber 4 to conf')
@@ -374,11 +315,9 @@ def makeConf(releaseType = 'byMaster'):
 	print('hanging up...')
 	subscrUA[0].uaCurrentCall.hangup(code=200, reason='Release after transfer')
 
-
 	print('Return master to conf')
 	confDialog.unhold()
 	time.sleep(2)
-
 
 	cnt=0 # timer
 	confDuration = 10 
@@ -404,11 +343,10 @@ def makeConf(releaseType = 'byMaster'):
 
 	if Released:
 		print('Some subscribers were in wrong call state')
+		logging.info('Some subscribers were in wrong call state')
 		confDialog.hangup(code=500, reason='Failure!')
-		for i in range(1,4):
-			subscrUA[i].uaCurrentCall.hangup(code=500, reason='Failure!')
+		hangupAll()
 		return False
-
 
 	if releaseType is 'byMaster':
 		print('Releasing conf')
@@ -425,7 +363,9 @@ def makeConf(releaseType = 'byMaster'):
 			cnt += 1
 
 		if not Released:
+			logging.info('Some subscribers were in wrong call state')
 			print(Fore.RED + 'Call not released')
+			hangupAll()
 			return False
 		else:
 			print(Fore.GREEN + 'Call released')
@@ -474,10 +414,11 @@ def makeConf(releaseType = 'byMaster'):
 
 		if not Released:
 			print(Fore.RED + 'Some calls wrong released')
+			logging.info('Some subscribers were in wrong call state')
+			hangupAll()
 			return False
 		else:
 			print(Fore.GREEN + 'Calls successful released')
-
 
 	elif releaseType is 'halfUsers':
 		print('Releasing subscribers from conf')
@@ -523,10 +464,11 @@ def makeConf(releaseType = 'byMaster'):
 
 		if not Released:
 			print(Fore.RED + 'Some calls wrong released')
+			logging.info('Some subscribers were in wrong call state')
+			hangupAll()
 			return False
 		else:
 			print(Fore.GREEN + 'Calls successful released')
-
 	return True
 
 def makeConf2(releaseType = 'byMaster'):
@@ -540,21 +482,9 @@ def makeConf2(releaseType = 'byMaster'):
 	subscrUA[0].makeCall(phoneURI=subscrNum[1]+'@'+testingDomain)
 
 	print('waiting for answer at B party')
-	cnt = 0
-	Answered = False
-	while cnt < 50:		
-		time.sleep(0.1)
-		if subscrUA[1].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break			
-		print('.',end='')		
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[1],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
 	time.sleep(2)
 
 	print('Putting on hold B party')
@@ -567,21 +497,9 @@ def makeConf2(releaseType = 'byMaster'):
 	subscrUA[0].makeCall(phoneURI=subscrNum[2]+'@'+testingDomain)
 
 	print('waiting for answer at C party')
-	cnt = 0
-	Answered = False
-	while cnt < 50:		
-		time.sleep(0.1)
-		if subscrUA[2].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break			
-		print('.',end='')		
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[2],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
 	time.sleep(2)
 
 	print('Putting on hold C party')
@@ -594,21 +512,9 @@ def makeConf2(releaseType = 'byMaster'):
 	subscrUA[0].makeCall(phoneURI=confNum+'@'+testingDomain)
 
 	print('waiting for answer from conf')
-	cnt = 0
-	Answered = False
-	while cnt < 50:		
-		time.sleep(0.1)
-		if subscrUA[0].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break			
-		print('.',end='')		
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[0],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
 
 	confDialog = subscrUA[0].uaCurrentCall
 
@@ -639,7 +545,6 @@ def makeConf2(releaseType = 'byMaster'):
 			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
 
 	print('Add one more subscriber to conf')
-
 	print('Putting on hold conf')
 	confDialog.hold()
 	time.sleep(2)
@@ -648,22 +553,9 @@ def makeConf2(releaseType = 'byMaster'):
 	subscrUA[0].makeCall(phoneURI=subscrNum[3]+'@'+testingDomain)
 
 	print('waiting for answer at D party')
-	cnt = 0
-	Answered = False
-	while cnt < 50:
-		time.sleep(0.1)
-		if subscrUA[3].uaCurrentCallInfo.state == 5:
-			Answered = True
-			break
-		print('.',end='')
-		cnt += 1
-
-	if not Answered:
-		print('Call not recieved')
+	if not waitForAnswer(subscrUA[3],timeout=5):
+		hangupAll()
 		return False
-	else:
-		print('Call answered')
-
 	time.sleep(2)
 
 	print('Transfering subscriber D to conf')
@@ -671,7 +563,6 @@ def makeConf2(releaseType = 'byMaster'):
 	time.sleep(1)
 	print('hanging up...')
 	subscrUA[0].uaCurrentCall.hangup(code=200, reason='Release after transfer')
-
 
 	print('Return master to conf')
 	confDialog.unhold()
@@ -702,11 +593,8 @@ def makeConf2(releaseType = 'byMaster'):
 	if Released:
 		print('Some subscribers were in wrong call state')
 		confDialog.hangup(code=500, reason='Failure!')
-		for i in range(1,4):
-			subscrUA[i].uaCurrentCall.hangup(code=500, reason='Failure!')
+		hangupAll()
 		return False
-
-
 
 	if releaseType is 'byMaster':
 		print('Releasing conf')
@@ -724,10 +612,10 @@ def makeConf2(releaseType = 'byMaster'):
 
 		if not Released:
 			print(Fore.RED + 'Call not released')
+			hangupAll()
 			return False
 		else:
 			print(Fore.GREEN + 'Call released')
-
 
 	elif releaseType is 'byUsers':
 		print('Releasing subscribers from conf')
@@ -773,6 +661,7 @@ def makeConf2(releaseType = 'byMaster'):
 
 		if not Released:
 			print(Fore.RED + 'Some calls wrong released')
+			hangupAll()
 			return False
 		else:
 			print(Fore.GREEN + 'Calls successful released')
@@ -821,63 +710,124 @@ def makeConf2(releaseType = 'byMaster'):
 
 		if not Released:
 			print(Fore.RED + 'Some calls wrong released')
+			hangupAll()
 			return False
 		else:
 			print(Fore.GREEN + 'Calls successful released')
 
-
 	return True
 
 
+def waitForAnswer(pjSubscriber,timeout = 5):
+	cnt = 0
+	Answered = False
+	while cnt < (timeout * 10):
+		time.sleep(0.1)
+		if pjSubscriber.uaCurrentCallInfo.state == 5:
+			Answered = True
+			break
+		print('.',end='')
+		cnt += 1
 
-#######################################################################
+	if not Answered:
+		logging.error(str(pjSubscriber.uaAccountInfo.uri) + ': Didn\'t recieved expected incoming call ')
+		print('Call not recieved')
+		return False
+	else:
+		print('Call answered')
+		return True
+
+def hangupAll(reason='All calls finish due failure'):
+	for pjSubscriber in subscrUA:
+		try:
+			pjSubscriber.uaCurrentCall.hangup(code=200, reason=reason)
+		except Exception as e:
+			pass
+
+######################################################################
 
 testFailure = False
 
-
+testResultsList = []
 preconfigure()
 
-'''
+testResultsList.append(' ------TEST RESULTS------- ')
+testResultsList.append(' --- Terminal type: Smart --- ')
+#'''
+resultStr = 'Conf test: Release by master - '
 if makeConf(releaseType='byMaster'):
-	print('Conf test: Release by master - OK ')
+	resultStr = resultStr + '0K'
+	logging.info(resultStr)
 else:
-	print('Conf test: Release by master - FAILED! ')
+	resultStr = resultStr + 'FAILED'
+	logging.error(resultStr)
 	testFailure = True
-'''
+testResultsList.append(resultStr)
+print(resultStr)
+#'''
 
-'''
+#'''
+resultStr = 'Conf test: Release by users - '
 if makeConf(releaseType='byUsers'):
-	print('Conf test: Release by users - OK ')
+	resultStr = resultStr + '0K'
+	logging.info(resultStr)
 else:
-	print('Conf test: Release by users - FAILED! ')
+	resultStr = resultStr + 'FAILED'
+	logging.error(resultStr)
 	testFailure = True
+testResultsList.append(resultStr)
+print(resultStr)
 
-if makeConf(releaseType='halfUsers'):0
-	print('Conf test: Release by half users and master - OK ')
+resultStr = 'Conf test: Release by half users and master - '
+if makeConf(releaseType='halfUsers'):
+	resultStr = resultStr + '0K'
+	logging.info(resultStr)
 else:
-	print('Conf test: Release by half users and master - FAILED! ')
+	resultStr = resultStr + 'FAILED'
+	logging.error(resultStr)
 	testFailure = True
-'''
+testResultsList.append(resultStr)
+print(resultStr)
+#'''
 
+resultStr = 'Conf test 2: Release by master - '
 if makeConf2(releaseType='byMaster'):
-	print('Conf test: Release by master - OK ')
+	resultStr = resultStr + '0K'
+	logging.info(resultStr)
 else:
-	print('Conf test: Release by master - FAILED! ')
+	resultStr = resultStr + 'FAILED'
+	logging.error(resultStr)
 	testFailure = True
+testResultsList.append(resultStr)
+print(resultStr)
 
+resultStr = 'Conf test 2: Release by users - '
 if makeConf2(releaseType='byUsers'):
-	print('Conf test: Release by master - OK ')
+	resultStr = resultStr + '0K'
+	logging.info(resultStr)
 else:
-	print('Conf test: Release by master - FAILED! ')
+	resultStr = resultStr + 'FAILED'
+	logging.error(resultStr)
 	testFailure = True
+testResultsList.append(resultStr)
+print(resultStr)
 
+resultStr = 'Conf test 2: Release by half users and master - '
 if makeConf2(releaseType='halfUsers'):
-	print('Conf test: Release by master - OK ')
+	resultStr = resultStr + '0K'
+	logging.info(resultStr)
 else:
-	print('Conf test: Release by master - FAILED! ')
+	resultStr = resultStr + 'FAILED'
+	logging.error(resultStr)
 	testFailure = True
+testResultsList.append(resultStr)
+print(resultStr)
 
+resultTxt = ''
+for resultStr in testResultsList:
+	resultTxt = resultTxt + resultStr + '\n'
 
-ccn.coconInt.eventForStop.set()
+print(resultTxt)
+logging.info(resultTxt)
 
 sys.exit(0)
