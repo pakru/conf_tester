@@ -39,7 +39,8 @@ dsNode='ds1@ecss1'
 '''
 
 #sippPath = str(os.environ.get('SIPP_PATH'))
-sippListenAddress=config.testConfigJson['SIPuaListenAddr']
+#sippListenAddress=config.testConfigJson['SIPuaListenAddr']
+sippListenAddress=config.testConfigJson['SystemVars'][0]['%%SERV_IP%%']
 sippListenPort='15076'
 sippMediaListenPort='16016'
 sippMediaListenPortTrunk='17016'
