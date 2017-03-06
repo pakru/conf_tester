@@ -237,7 +237,12 @@ def makeConf(releaseType = 'byMaster'):
 	time.sleep(2)
 
 	print('Transfering subscriber B to conf')
-	subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall=subscrUA[0].uaCurrentCall)
+	if not subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall=subscrUA[0].uaCurrentCall):
+		print('Failed to make a transfer')
+		logging.error('Failed to make a transfer')
+		hangupAll()
+		return False
+
 	time.sleep(1)
 	print('hanging up...')
 	subscrUA[0].uaCurrentCall.hangup(code=200, reason='Release after transfer')
@@ -254,9 +259,12 @@ def makeConf(releaseType = 'byMaster'):
 		print('.',end='')
 		cnt += 1
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
 		if subscrUA[1].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber B '+ str(i) + ' in wrong state: ' + str(subscrNum[1].uaAccountInfo.uri) + ' ' + subscrNum[1].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[1].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 
 	print('Putting on hold conf')
 	confDialog.hold()
@@ -273,7 +281,12 @@ def makeConf(releaseType = 'byMaster'):
 	time.sleep(2)
 
 	print('Transfering subscriber 3 to conf')
-	subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall=subscrUA[0].uaCurrentCall)
+	if not subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall=subscrUA[0].uaCurrentCall):
+		print('Failed to make a transfer')
+		logging.error('Failed to make a transfer')
+		hangupAll()
+		return False
+
 	time.sleep(1)
 	print('hanging up...')
 	subscrUA[0].uaCurrentCall.hangup(code=200, reason='Release after transfer')
@@ -290,11 +303,17 @@ def makeConf(releaseType = 'byMaster'):
 		print('.',end='')
 		cnt += 1
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 		if subscrUA[1].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber B '+ str(i) + ' in wrong state: ' + str(subscrNum[1].uaAccountInfo.uri) + ' ' + subscrNum[1].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[1].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 
 	print('Putting on hold conf')
 	confDialog.hold()
@@ -310,7 +329,12 @@ def makeConf(releaseType = 'byMaster'):
 	time.sleep(2)
 
 	print('Transfering subscriber 4 to conf')
-	subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain,currentCall=subscrUA[0].uaCurrentCall)
+	if not subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain,currentCall=subscrUA[0].uaCurrentCall):
+		print('Failed to make a transfer')
+		logging.error('Failed to make a transfer')
+		hangupAll()
+		return False
+
 	time.sleep(1)
 	print('hanging up...')
 	subscrUA[0].uaCurrentCall.hangup(code=200, reason='Release after transfer')
@@ -329,16 +353,24 @@ def makeConf(releaseType = 'byMaster'):
 		print('.',end='')
 		cnt += 1
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 		if subscrUA[1].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber B '+ str(i) + ' in wrong state: ' + str(subscrNum[1].uaAccountInfo.uri) + ' ' + subscrNum[1].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[1].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 
 	if Released:
@@ -354,9 +386,10 @@ def makeConf(releaseType = 'byMaster'):
 
 		cnt = 0
 		Released = False
-		while cnt < 50:
+		while cnt < 70:
 			time.sleep(0.1)
-			if (subscrUA[1].uaCurrentCallInfo.state != 5) and (subscrUA[2].uaCurrentCallInfo.state != 5) and (subscrUA[3].uaCurrentCallInfo.state != 5):
+			if (subscrUA[1].uaCurrentCallInfo.state != 5) and \
+					(subscrUA[2].uaCurrentCallInfo.state != 5) and (subscrUA[3].uaCurrentCallInfo.state != 5):
 				Released = True
 				break
 			print('.',end='')
@@ -378,13 +411,19 @@ def makeConf(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup subsciber C')
@@ -393,10 +432,14 @@ def makeConf(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		subscrUA[3].uaCurrentCall.hangup(code=200, reason='Leaving conf')
@@ -404,7 +447,9 @@ def makeConf(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup conf master')
@@ -428,13 +473,19 @@ def makeConf(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup subsciber C')
@@ -443,10 +494,14 @@ def makeConf(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup conf master')
@@ -454,7 +509,7 @@ def makeConf(releaseType = 'byMaster'):
 
 		cnt = 0
 		Released = False
-		while cnt < 50:
+		while cnt < 70:
 			time.sleep(0.1)
 			if (subscrUA[1].uaCurrentCallInfo.state != 5) and (subscrUA[2].uaCurrentCallInfo.state != 5) and (subscrUA[3].uaCurrentCallInfo.state != 5):
 				Released = True
@@ -519,13 +574,23 @@ def makeConf2(releaseType = 'byMaster'):
 	confDialog = subscrUA[0].uaCurrentCall
 
 	print('Transfering subscriber B to conf')
-	subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall = ADialog)
+	if not subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall = ADialog):
+		print('Failed to make a transfer')
+		logging.error('Failed to make a transfer')
+		hangupAll()
+		return False
+
 	time.sleep(1)
 	print('hanging up...')
 	ADialog.hangup(code=200, reason='Release after transfer')
 
 	print('Transfering subscriber C to conf')
-	subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall = BDialog)
+	if not subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain, currentCall = BDialog):
+		print('Failed to make a transfer')
+		logging.error('Failed to make a transfer')
+		hangupAll()
+		return False
+
 	time.sleep(1)
 	print('hanging up...')
 	BDialog.hangup(code=200, reason='Release after transfer')
@@ -538,11 +603,17 @@ def makeConf2(releaseType = 'byMaster'):
 		print('.',end='')
 		cnt += 1
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 		if subscrUA[1].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber B '+ str(i) + ' in wrong state: ' + str(subscrNum[1].uaAccountInfo.uri) + ' ' + subscrNum[1].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[1].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 
 	print('Add one more subscriber to conf')
 	print('Putting on hold conf')
@@ -559,7 +630,12 @@ def makeConf2(releaseType = 'byMaster'):
 	time.sleep(2)
 
 	print('Transfering subscriber D to conf')
-	subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain,currentCall=subscrUA[0].uaCurrentCall)
+	if not subscrUA[0].ctr_request(dstURI=confNum+'@'+testingDomain,currentCall=subscrUA[0].uaCurrentCall):
+		print('Failed to make a transfer')
+		logging.error('Failed to make a transfer')
+		hangupAll()
+		return False
+
 	time.sleep(1)
 	print('hanging up...')
 	subscrUA[0].uaCurrentCall.hangup(code=200, reason='Release after transfer')
@@ -578,16 +654,24 @@ def makeConf2(releaseType = 'byMaster'):
 		print('.',end='')
 		cnt += 1
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 		if subscrUA[1].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber B '+ str(i) + ' in wrong state: ' + str(subscrNum[1].uaAccountInfo.uri) + ' ' + subscrNum[1].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[1].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber B in wrong state: ' + str(subscrUA[1].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = True
 
 	if Released:
@@ -625,13 +709,19 @@ def makeConf2(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup subsciber C')
@@ -640,10 +730,14 @@ def makeConf2(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		subscrUA[3].uaCurrentCall.hangup(code=200, reason='Leaving conf')
@@ -651,7 +745,9 @@ def makeConf2(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup conf master')
@@ -674,13 +770,19 @@ def makeConf2(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[2].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber C '+ str(i) + ' in wrong state: ' + str(subscrNum[2].uaAccountInfo.uri) + ' ' + subscrNum[2].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[2].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber C in wrong state: ' + str(subscrUA[2].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup subsciber C')
@@ -689,10 +791,14 @@ def makeConf2(releaseType = 'byMaster'):
 
 		Released = True
 		if confDialog.info().state != 5:
-			print(Fore.YELLOW +'Subscriber A '+ str(i) + ' in wrong state: ' + str(subscrNum[0].uaAccountInfo.uri) + ' ' + subscrNum[0].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[0].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber A in wrong state: ' + str(subscrUA[0].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 		if subscrUA[3].uaCurrentCallInfo.state != 5:
-			print(Fore.YELLOW +'Subscriber D '+ str(i) + ' in wrong state: ' + str(subscrNum[3].uaAccountInfo.uri) + ' ' + subscrNum[3].uaCurrentCallInfo.state_text)
+			print(Fore.YELLOW +'Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[3].uaCurrentCallInfo.state_text)
+			logging.warning('Subscriber D in wrong state: ' + str(subscrUA[3].uaAccountInfo.uri) + ' ' + subscrUA[
+				0].uaCurrentCallInfo.state_text)
 			Released = False
 
 		print('Hangup conf master')
@@ -717,10 +823,16 @@ def makeConf2(releaseType = 'byMaster'):
 
 	return True
 
+def UAstateCheck(pjSubscriberList):
+	for pjSubscr in pjSubscriberList:
+		pass
+		#todo statechecker
+
 
 def waitForAnswer(pjSubscriber,timeout = 5):
 	cnt = 0
 	Answered = False
+	logging.info(str(pjSubscriber.uaAccountInfo.uri) + ': Waiting for call')
 	while cnt < (timeout * 10):
 		time.sleep(0.1)
 		if pjSubscriber.uaCurrentCallInfo.state == 5:
@@ -735,14 +847,18 @@ def waitForAnswer(pjSubscriber,timeout = 5):
 		return False
 	else:
 		print('Call answered')
+		logging.info(str(pjSubscriber.uaAccountInfo.uri) + ': Call answered')
 		return True
 
 def hangupAll(reason='All calls finish due failure'):
+	print('Hangup all calls due to failure')
+	logging.info('Hangup all calls due to failure')
 	for pjSubscriber in subscrUA:
 		try:
 			pjSubscriber.uaCurrentCall.hangup(code=200, reason=reason)
 		except Exception as e:
 			pass
+
 
 ######################################################################
 
@@ -753,8 +869,12 @@ preconfigure()
 
 testResultsList.append(' ------TEST RESULTS------- ')
 testResultsList.append(' --- Terminal type: Smart --- ')
+# todo: make tests for basic terminal
+
+
 #'''
 resultStr = 'Conf test: Release by master - '
+logging.info('Starting ' + resultStr)
 if makeConf(releaseType='byMaster'):
 	resultStr = resultStr + '0K'
 	logging.info(resultStr)
@@ -766,8 +886,8 @@ testResultsList.append(resultStr)
 print(resultStr)
 #'''
 
-#'''
 resultStr = 'Conf test: Release by users - '
+logging.info('Starting ' + resultStr)
 if makeConf(releaseType='byUsers'):
 	resultStr = resultStr + '0K'
 	logging.info(resultStr)
@@ -777,8 +897,9 @@ else:
 	testFailure = True
 testResultsList.append(resultStr)
 print(resultStr)
-
+#'''
 resultStr = 'Conf test: Release by half users and master - '
+logging.info('Starting ' + resultStr)
 if makeConf(releaseType='halfUsers'):
 	resultStr = resultStr + '0K'
 	logging.info(resultStr)
@@ -789,8 +910,10 @@ else:
 testResultsList.append(resultStr)
 print(resultStr)
 #'''
+#'''
 
-resultStr = 'Conf test 2: Release by master - '
+resultStr = 'Conf test type 2: Release by master - '
+logging.info('Starting ' + resultStr)
 if makeConf2(releaseType='byMaster'):
 	resultStr = resultStr + '0K'
 	logging.info(resultStr)
@@ -801,7 +924,8 @@ else:
 testResultsList.append(resultStr)
 print(resultStr)
 
-resultStr = 'Conf test 2: Release by users - '
+resultStr = 'Conf test type 2: Release by users - '
+logging.info('Starting ' + resultStr)
 if makeConf2(releaseType='byUsers'):
 	resultStr = resultStr + '0K'
 	logging.info(resultStr)
@@ -812,7 +936,8 @@ else:
 testResultsList.append(resultStr)
 print(resultStr)
 
-resultStr = 'Conf test 2: Release by half users and master - '
+resultStr = 'Conf test type 2: Release by half users and master - '
+logging.info('Starting ' + resultStr)
 if makeConf2(releaseType='halfUsers'):
 	resultStr = resultStr + '0K'
 	logging.info(resultStr)
@@ -822,7 +947,7 @@ else:
 	testFailure = True
 testResultsList.append(resultStr)
 print(resultStr)
-
+#'''
 resultTxt = ''
 for resultStr in testResultsList:
 	resultTxt = resultTxt + resultStr + '\n'
