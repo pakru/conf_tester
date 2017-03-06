@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3.5
+
 import config, time, sys, colorama, json, logging
 #import os
 #import subprocess
