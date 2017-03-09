@@ -11,9 +11,9 @@ from colorama import Fore, Back, Style
 #from http.server import BaseHTTPRequestHandler, HTTPServer
 #from threading import Thread
 
-testConfigFile = open('conf_test.json')
-config.testConfigJson = json.loads(testConfigFile.read())
-testConfigFile.close()
+#testConfigFile = open('conf_test.json')
+#config.testConfigJson = json.loads(testConfigFile.read())
+#testConfigFile.close()
 
 import pjSIP_py.pjUA as pjua
 import ssh_cocon.ssh_cocon as ccn
