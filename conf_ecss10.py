@@ -11,10 +11,6 @@ from colorama import Fore, Back, Style
 #from http.server import BaseHTTPRequestHandler, HTTPServer
 #from threading import Thread
 
-#testConfigFile = open('conf_test.json')
-#config.testConfigJson = json.loads(testConfigFile.read())
-#testConfigFile.close()
-
 import pjSIP_py.pjUA as pjua
 import ssh_cocon.ssh_cocon as ccn
 
@@ -29,7 +25,9 @@ port = int(os.environ.get('COCON_PORT'))
 #testingDomain = str(os.environ.get('SS_TEST_DOMAIN_NAME'))
 testingDomain = config.testConfigJson['DomainName']
 testingDomainSIPport = config.testConfigJson['sipListenPort']
-testingDomainSIPaddr = config.testConfigJson['SystemVars'][0]['%%EXTER_IP%%']
+testingDomainSIPaddr = config.testConfigJson['SystemVars'][0]['%%SERV_IP%%']
+testingDomainSIPaddr2 = config.testConfigJson['SystemVars'][0]['%%SERV_IP2%%']
+
 sipUsersCfgJson = config.testConfigJson['Users']
 
 '''
@@ -147,6 +145,12 @@ def preconfigure():
 	else :
 		print(Fore.RED + 'Smthing happen wrong with SIP network setup...')
 		return False
+
+	if ccn.sipTransportSetup(dom=testingDomain,sipIP=testingDomainSIPaddr2,sipPort=testingDomainSIPport, sipNode='sip1@ecss2'):
+		print(Fore.GREEN + 'Successful secondary SIP transport declare')
+	else :
+		print(Fore.YELLOW + 'Smthing happen wrong with secondary SIP network setup...')
+
 
 	#time.sleep(2)
 	if ccn.setTraceMode(dom=testingDomain,traceMode='full_compressed'):
@@ -853,7 +857,7 @@ def waitForAnswer(pjSubscriber,timeout = 5):
 		logging.info(str(pjSubscriber.uaAccountInfo.uri) + ': Call answered')
 		return True
 
-def hangupAll(reason='All calls finish due failure'):
+def hangupAll(reason='All calls finish due to failure'):
 	print('Hangup all calls due to failure')
 	logging.info('Hangup all calls due to failure')
 	for pjSubscriber in subscrUA:
