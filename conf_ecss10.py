@@ -25,8 +25,8 @@ port = int(os.environ.get('COCON_PORT'))
 #testingDomain = str(os.environ.get('SS_TEST_DOMAIN_NAME'))
 testingDomain = config.testConfigJson['DomainName']
 testingDomainSIPport = config.testConfigJson['sipListenPort']
-testingDomainSIPaddr = config.testConfigJson['SystemVars'][0]['%%SERV_IP%%']
-testingDomainSIPaddr2 = config.testConfigJson['SystemVars'][0]['%%SERV_IP2%%']
+testingDomainSIPaddr = config.testConfigJson['SystemVars'][0]['%%EXTER_IP%%']
+testingDomainSIPaddr2 = config.testConfigJson['SystemVars'][0]['%%EXTER_IP2%%']
 
 sipUsersCfgJson = config.testConfigJson['Users']
 
