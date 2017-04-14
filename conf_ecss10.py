@@ -962,4 +962,7 @@ for resultStr in testResultsList:
 print(resultTxt)
 logging.info(resultTxt)
 
+if testFailure:
+	sys.exit(1)
+
 sys.exit(0)
